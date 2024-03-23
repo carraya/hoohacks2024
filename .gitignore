@@ -34,3 +34,6 @@
 # TypeScript
 /www/*.tsbuildinfo
 /www/next-env.d.ts
+
+# Python API
+/apis/.env*.local
