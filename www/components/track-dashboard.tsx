@@ -1,5 +1,5 @@
-import { UserAuth } from "@/components/user-auth";
-import { CircleUser, Menu, Package2, Search } from "lucide-react"
+"use client";
+import { CircleUser } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
+import React, { useState } from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,41 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Link from "@/node_modules/next/link"
 
+
+
 export function TrackDashboard() {
+    const [input1, setInput1] = useState('');
+    const [input2, setInput2] = useState('');
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+
+    // Validation Needed Here
+    
+    try {
+      const response = await fetch('https://dummy.restapiexample.com/api/v1/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          input1,
+          input2,
+        }),
+      });
+      
+      // Handle response
+      if (response.ok) {
+        // API call was successful
+        console.log('Data submitted successfully!');
+      } else {
+        // API call failed
+        console.error('Failed to submit data:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
+  };
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -53,19 +87,32 @@ export function TrackDashboard() {
                 <CardTitle>Follow the Prompts</CardTitle>
               </CardHeader>
               <CardContent>
-                <form className="py-2">
-                  <Input placeholder="What do you know about this subject" />
-                </form>
-                <form className="py-2">
-                  <Input placeholder="What do you want to know about this subject?" />
-                </form>
+              <form onSubmit={handleFormSubmit} className="py-2">
+        <Input
+          type="text"
+          placeholder="What do you know?"
+          value={input1}
+          onChange={(e) => setInput1(e.target.value)}
+          className="py-4"
+        /><div className="py-1"></div>
+        <Input
+          type="text"
+          placeholder="What do you want to know?"
+          value={input2}
+          onChange={(e) => setInput2(e.target.value)}
+        /><div className="py-1"></div>
+        <Button onClick={handleFormSubmit}><button type="submit">Click Here</button></Button>
+      </form>
               </CardContent>
-              <CardFooter className="border-t px-6 py-4">
-                <Button>Learn</Button>
-              </CardFooter>
             </Card>
             
           </div>
+        </div>
+        <div className="mx-auto flex justify-center w-full max-w-6xl items-start gap-8 ">
+            <Link href="./trackId"><Button>Path 1</Button></Link>
+            <Link href="./trackId"><Button>Path 2</Button></Link>
+            <Link href="./trackId"><Button>Path 3</Button></Link>
+            
         </div>
       </main>
     </div>
