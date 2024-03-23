@@ -1,9 +1,9 @@
 import { UserAuth } from "@/components/user-auth";
 
-export default function Auth() {
+export default function TracksDashboard() {
   return (
     <main className="min-h-screen min-w-screen flex justify-center items-center">
-      <UserAuth />
+      This is the tracks dashboard
     </main>
   );
 }
