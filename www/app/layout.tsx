@@ -14,8 +14,8 @@ const SatoshiFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Skalara",
-  description: "Automated project management for small tech teams.",
+  title: "HooHacks 2024",
+  description: "This is Chris, Farouk, and James HooHacks 2024 project!",
 };
 
 export default function RootLayout({
