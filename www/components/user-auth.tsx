@@ -5,23 +5,33 @@ import Link from "next/link";
 import { useState } from "react";
 
 export function UserAuth() {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
     <div className="lg:p-8">
       <div className="flex justify-end">
-        <button className="text-primary">Login</button>
+        <button
+          className="text-primary"
+          onClick={() => {
+            setIsLogin(!isLogin);
+          }}
+        >
+          {isLogin ? "Sign In" : "Sign Up"}
+        </button>
       </div>
+
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Create an account
+            {isLogin ? "Welcome back" : "Create an Account"}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Enter your email below to create your account
+            {isLogin
+              ? "Sign in to your account"
+              : "Enter your email to create a new account"}
           </p>
         </div>
-        <SignupForm />
-
+        {isLogin ? <LoginForm /> : <SignupForm />}
         <p className="px-8 text-center text-sm text-muted-foreground">
           By clicking continue, you agree to our{" "}
           <Link
