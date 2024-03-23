@@ -16,11 +16,11 @@ export function LandPage() {
       <CardHeader>
         <CardTitle className="text-2xl">Learn Anything</CardTitle>
         <CardDescription>
-          Click the button below.
+          A personalized learning experience for everyone.
         </CardDescription>
       </CardHeader>
       <CardFooter>
-        <Button className="w-full" ><Link href="">Enter</Link></Button>
+        <Button className="w-full" ><Link href="">Get Started</Link></Button>
       </CardFooter>
     </Card>
   )
