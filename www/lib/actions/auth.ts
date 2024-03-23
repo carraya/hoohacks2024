@@ -32,7 +32,7 @@ export async function login({ email, password }: AuthData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/tracks");
 }
 
 export async function signup({ email, password }: AuthData) {
@@ -57,5 +57,5 @@ export async function signup({ email, password }: AuthData) {
 
   console.log(data);
   revalidatePath("/", "layout");
-  redirect("/");
+  redirect("/auth/verify");
 }
