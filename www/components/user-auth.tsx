@@ -16,7 +16,7 @@ export function UserAuth() {
             setIsLogin(!isLogin);
           }}
         >
-          {isLogin ? "Sign In" : "Sign Up"}
+          {isLogin ? "Sign Up" : "Sign In"}
         </button>
       </div>
 

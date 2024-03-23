@@ -16,7 +16,9 @@ export function SignupForm() {
 
   const isFormValid = () => email.length > 0 && password.length > 0;
 
-  const handleSignup = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSignup = async (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     if (!isFormValid()) {
       toast.error("Please fill in both email and password");
       return;
@@ -24,7 +26,7 @@ export function SignupForm() {
     setIsLoading(true);
     try {
       await signup({ email, password });
-      toast.success("Logged in successfully");
+      toast.success("Check your email to verify your account");
     } catch (err: any) {
       toast.error(err.message);
     } finally {
@@ -34,7 +36,7 @@ export function SignupForm() {
 
   return (
     <div className="grid gap-6">
-      <form onSubmit={handleSignup}>
+      <form>
         <div className="grid gap-2">
           <div className="grid gap-1">
             <Label className="" htmlFor="email">
@@ -68,7 +70,7 @@ export function SignupForm() {
               disabled={isLoading}
             />
           </div>
-          <Button disabled={isLoading || !isFormValid()}>
+          <Button disabled={isLoading || !isFormValid()} onClick={handleSignup}>
             {isLoading && (
               <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
             )}
