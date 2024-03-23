@@ -57,5 +57,5 @@ export async function signup({ email, password }: AuthData) {
 
   console.log(data);
   revalidatePath("/", "layout");
-  redirect("/verify");
+  redirect("/auth/verify");
 }
