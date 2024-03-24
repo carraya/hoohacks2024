@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import React, { useState, useEffect} from "react"
-import {createClient} from "@/utils/supabase/client";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,13 +21,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
+import { getTracks } from "@/lib/actions/track" 
 
 
 
 export function TrackDashboard() {
-    const supabase = createClient();
     const [input1, setInput1] = useState('');
     const [input2, setInput2] = useState('');
+    const [tracks, setTracks] = useState([]);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault(); //validation needed here
@@ -55,21 +56,12 @@ export function TrackDashboard() {
     }
   };
 
-  const [tracks, setTracks] = useState([]);
-    async function getTracks() {
-        const res = await supabase.from('tracks').select('*');
-        console.log(res);
-        if (res.error) {
-            throw res.error;
-        }
-        return res.data;
-    }
-
     useEffect(() => {
-        getTracks().then((data) => {
-            console.log(data);
-            setTracks(data);
-        });
+      async function fetchData() {
+        const res = await getTracks();
+        setTracks(res);
+      }
+
     }, []);
   
   return (
