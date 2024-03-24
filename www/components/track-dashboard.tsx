@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 
 
+
 export function TrackDashboard() {
     const supabase = createClient();
     const [input1, setInput1] = useState('');
@@ -57,6 +58,7 @@ export function TrackDashboard() {
   const [tracks, setTracks] = useState([]);
     async function getTracks() {
         const res = await supabase.from('tracks').select('*');
+        console.log(res);
         if (res.error) {
             throw res.error;
         }
@@ -114,7 +116,7 @@ export function TrackDashboard() {
           value={input2}
           onChange={(e) => setInput2(e.target.value)}
         /><div className="py-1"></div>
-        <Button onClick={handleFormSubmit}><button type="submit">Submit</button></Button>
+        <Button onClick={handleFormSubmit}><button type="submit">Submit!</button></Button>
       </form>
               </CardContent>
             </Card>
@@ -122,22 +124,12 @@ export function TrackDashboard() {
           </div>
         </div>
         <div className="mx-auto flex justify-center w-full max-w-6xl items-start gap-8">
-        {tracks.map((track) => (
-        <Button key={track.id}>
-            <Link href={`/${track.id}`}>
-                Start Learning!
+        <Link key={tracks[0]?.id} href={`/${tracks[0]?.id}`}><Button>
+                    <h2>{tracks[0]?.id}</h2></Button>
             </Link>
-        </Button>
-            ))}
         </div>
 
       </main>
     </div>
   )
 }
-
-/*
-
-Returns a key (track) with all videos, use dynamic routing to get the track id and display the videos
-
-*/
