@@ -11,9 +11,22 @@
   }
 */
 interface VideoModel {
-    videoLink: string;
-    videoTitle: string;
-    channelName: string;
-    videoTopics: string[];
-  }
-  
+    id: string;
+    order: number;
+    title: string;
+    trackID: number;
+    videoID: string;
+}
+
+type VideoData = {
+    title: string;
+    videoID: string;
+    trackID: number;
+    order: number;
+};
+
+type TrackData = {
+  title: string;
+  description: string;
+  userId: string;
+};

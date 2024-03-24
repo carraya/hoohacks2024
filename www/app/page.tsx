@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { UserAuth } from "@/components/user-auth";
 import Link from "next/link";
 import Image from "@/node_modules/next/image";
-import Logo from "@/public/logo.svg";
+import Logo from "@/public/Logo-Color.svg";
 import Logo2 from "@/public/Purple-Cap.png";
 
 export default function Home() {

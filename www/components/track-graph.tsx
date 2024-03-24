@@ -20,10 +20,11 @@ export default function TrackGraphView({
         <GraphLayer key={index}>
           <VideoNode
             videoModel={{
-              videoLink: videoModel.videoLink,
-              videoTitle: videoModel.videoTitle,
-              channelName: videoModel.channelName,
-              videoTopics: videoModel.videoTopics,
+              id: videoModel.id,
+              order: videoModel.order,
+              title: videoModel.title,
+              trackID: videoModel.trackID,
+              videoID: videoModel.videoID,
             }}
             selected={selectedIndex === index}
           />
@@ -32,8 +33,8 @@ export default function TrackGraphView({
               strokeWidth={2}
               headSize={10}
               dashness={true}
-              end={videoModel.videoLink.slice(-5)}
-              start={track[index - 1].videoLink.slice(-5)}
+              end={videoModel.videoID}
+              start={track[index - 1].videoID}
               color="gray"
             />
           )}

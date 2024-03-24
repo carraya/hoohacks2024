@@ -1,26 +1,34 @@
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
-export default function TrackCard() {
+interface TrackCardProps {
+  title: string;
+  description: string;
+  trackId: string;
+}
+
+export default function TrackCard({
+  title,
+  description,
+  trackId,
+}: TrackCardProps) {
+  let firstWord = description.split(" ")[description.split(" ").length - 1];
+  let cardTitle = firstWord[0].toUpperCase() + firstWord.slice(1);
+
   return (
-    <Card className="p-0 flex flex-col rounded-tl-2xl rounded-tr-2xl min-h-[200px]">
-      <div className="h-[50px] p-[10px] w-full flex items-center rounded-tl-xl rounded-tr-xl bg-gradient-to-b from-gray-100 to-gray-200">
-        <Progress
-          className="h-[10px] w-full bg-gray-100"
-          indicatorColor="bg-gray-500"
-          value={50}
-          max={100}
-        />
-      </div>
-      <div className="flex flex-col h-full p-4">
+    <Card className="p-0 flex flex-col rounded-2xl min-h-[250px]">
+      <div className="h-16 p-4 flex items-center rounded-tl-2xl rounded-tr-2xl bg-gradient-to-b from-gray-100 to-gray-200"></div>
+      <div className="flex flex-col flex-1 p-4 w-full">
         <div>
-          <h2 className="text-xl font-satoshi mb-1">Track Title</h2>
-          <p className="text-sm text-muted-foreground">Track Description</p>
+          <h2 className="text-xl font-satoshi mb-2">{cardTitle}</h2>
+          <p className="text-sm text-muted-foreground">{description}</p>
         </div>
-        <div className="flex-1"></div>
-        <div>
-          <Button className="w-full">Keep Learning</Button>
+        <div className="flex-grow"></div>
+        <div className="flex flex-0 w-full">
+          <Link href={`/tracks/${trackId}`} className="w-full">
+            <Button className="w-full">Keep Learning</Button>
+          </Link>
         </div>
       </div>
     </Card>

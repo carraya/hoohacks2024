@@ -2,36 +2,20 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-type VideoData = {
-    title: string;
-    description: string;
-    videoID: string;
-    skills: JSON;
-    trackID: number;
-    order: number;
-    watched: boolean;
-};
-
 export async function createVideo({
     title,
-    description,
     videoID,
-    skills,
     trackID,
     order,
-    watched,
 }: VideoData) {
     const supabase = createClient();
 
     const { data, error } = await supabase.from("videos").insert([
         {
             title,
-            description,
             videoID,
-            skills,
             trackID,
             order,
-            watched,
         },
     ]);
 
@@ -40,6 +24,22 @@ export async function createVideo({
     }
 
     console.log(data);
+}
+
+export async function getVideosByTrackId(trackId: string) {
+    console.log("Called getVideosByTrackId")
+    const supabase = createClient();
+
+    console.log("trackId: ", trackId)
+
+    const { data, error } = await supabase.from("videos").select().eq("trackID", trackId);
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+
+    return data;
 }
 
 export async function readVideos() {

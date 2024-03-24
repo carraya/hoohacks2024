@@ -4,6 +4,7 @@ import TrackGraphView from "@/components/track-graph";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { useEffect, useState } from "react";
 import React from "react";
+import { createClient } from "@/utils/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,99 +16,29 @@ import Image from "next/image";
 import Logo from "@/public/Logo-Color.svg";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getVideosByTrackId } from "@/lib/actions/video";
+import { getTitleByTrackId } from "@/lib/actions/track";
 
-export default function Track({ trackId }: { trackId: string }) {
-  const [track, setTrack] = useState([
-    {
-      videoLink: "https://www.youtube.com/watch?v=PHzOOQfhPFg",
-      videoTitle: "I'm Just a Girl",
-      channelName: "Vevo",
-      videoTopics: ["Music", "World", "Girl"],
-    },
-    {
-      videoLink: "https://www.youtube.com/watch?v=PW_TNHZvjx0",
-      videoTitle: "My Heart it Beats For You",
-      channelName: "Grant Perez",
-      videoTopics: ["Romance", "Song", "Love"],
-    },
-    {
-      videoLink: "https://www.youtube.com/watch?v=7WloGLLvJHg",
-      videoTitle: "L-O-V-E",
-      channelName: "Harvard Krokodiles",
-      videoTopics: ["Acapella", "Harvard"],
-    },
-  ]);
+export default function Track({ params }: { params: { trackId: string } }) {
+  const router = useRouter();
+  const supabase = createClient();
+
+  const [track, setTrack] = useState<VideoModel[]>([]); // Specify VideoModel as the type for track
+  const [trackTitle, setTrackTitle] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // useEffect(() => {
-  //   // use supabase to select track by id
-  //   const res = await supabase.from("tracks").select("*").eq("id", trackId);
-  //   setTrack(res.data[0].videos)
-  // }, [trackId]);
-
-  function addNode(
-    link: string,
-    title: string,
-    channel: string,
-    topics: string[]
-  ) {
-    console.log("Adding Node");
-    setTrack([
-      ...track,
-      {
-        videoLink: link,
-        videoTitle: title,
-        channelName: channel,
-        videoTopics: topics,
-      },
-    ]);
-  }
-
-  function removeNode(id: string) {
-    setTrack(track.filter((node) => node.videoLink !== id));
-  }
-
-  function updateNode(
-    id: string,
-    link: string,
-    title: string,
-    channel: string,
-    topics: string[]
-  ) {
-    setTrack(
-      track.map((node) =>
-        node.videoLink === id
-          ? {
-              videoLink: link,
-              videoTitle: title,
-              channelName: channel,
-              videoTopics: topics,
-            }
-          : node
-      )
-    );
-  }
-
-  function traverseLeft() {
-    if (selectedIndex !== 0) {
-      setSelectedIndex(selectedIndex - 1);
+  useEffect(() => {
+    async function fetchData() {
+      if (params.trackId) {
+        const res: VideoModel[] = await getVideosByTrackId(params.trackId); // Ensure res is of type VideoModel[]
+        const title: string = await getTitleByTrackId(params.trackId);
+        setTrack(res);
+        setTrackTitle(res[0].title);
+      }
     }
-  }
-
-  function traverseRight() {
-    if (selectedIndex !== track.length - 1) {
-      setSelectedIndex(selectedIndex + 1);
-    }
-  }
-
-  function getIdFromIndex(index: number) {
-    console.log("Trying to go to index: ", index);
-    if (index < 0 || index >= track.length) {
-      return "";
-    }
-    console.log(track[index].videoLink.slice(-5));
-    return track[index].videoLink.slice(-5);
-  }
+    fetchData();
+  }, [params.trackId]);
 
   // Temporary Function
 
@@ -148,7 +79,7 @@ export default function Track({ trackId }: { trackId: string }) {
           </div>
         </div>
         <div className="relative h-[50px] w-full bg-gray-50 border-b flex justify-center items-center">
-          <p className="font-satoshi">Track Title</p>
+          <p className="font-satoshi">{trackTitle}</p>
         </div>
       </header>
 
@@ -168,7 +99,7 @@ export default function Track({ trackId }: { trackId: string }) {
                 onClick={() => {
                   if (selectedIndex !== 0) {
                     setSelectedIndex(selectedIndex - 1);
-                    zoomToElement(getIdFromIndex(selectedIndex - 1), -1);
+                    zoomToElement(track[selectedIndex - 1].videoID, -1);
                   }
                 }}
               >
@@ -177,7 +108,7 @@ export default function Track({ trackId }: { trackId: string }) {
               <Button
                 variant={"secondary"}
                 onClick={() => {
-                  zoomToElement(getIdFromIndex(selectedIndex), -1);
+                  zoomToElement(track[selectedIndex].videoID, -1);
                 }}
               >
                 Return to Current Video
@@ -188,7 +119,7 @@ export default function Track({ trackId }: { trackId: string }) {
                 onClick={() => {
                   if (selectedIndex !== track.length - 1) {
                     setSelectedIndex(selectedIndex + 1);
-                    zoomToElement(getIdFromIndex(selectedIndex + 1), -1);
+                    zoomToElement(track[selectedIndex + 1].videoID, -1);
                   }
                 }}
               >
