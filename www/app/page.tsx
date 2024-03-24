@@ -5,7 +5,7 @@ import { UserAuth } from "@/components/user-auth";
 import Link from "next/link";
 import Image from "@/node_modules/next/image";
 import Logo from "@/public/logo.svg";
-import Logo2 from "@/public/cap.png";
+import Logo2 from "@/public/Purple-Cap.png";
 
 export default function Home() {
   return (
