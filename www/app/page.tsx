@@ -11,11 +11,16 @@ export default function Home() {
   return (
     <div className="flex flex-col justify-center min-h-screen">
       <header className="sticky top-0 flex h-12 items-left gap-4 border-b bg-background px-4 md:px-6">
-        <div className="flex w-full justify-start gap-4 md:ml-auto md:gap-2 lg:gap-4">
-          <Image src={Logo} alt="Logo" width={75} height={75} />
-          <div className="flex justify-center items-center">
-            <p className="py-5 font-sans text-2xl">Rabbithole</p>
+        <div className="flex w-full justify-between items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+          <div className="flex justify-start">
+            <Image src={Logo} alt="Logo" width={75} height={75} />
+            <div className="flex justify-center items-center">
+              <p className="py-5 font-sans text-2xl">Rabbithole</p>
+            </div>
           </div>
+          <Button asChild>
+            <Link href="/tracks">Tracks</Link>
+          </Button>
         </div>
       </header>
       <main className="min-h-screen min-w-screen flex py-10 items-center flex-col">
