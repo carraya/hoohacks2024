@@ -1,17 +1,12 @@
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
-import localFont from "next/font/local";
+import { Fraunces } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const SatoshiFont = localFont({
-  src: "../lib/fonts/Satoshi-Variable.ttf",
-  variable: "--font-satoshi",
-});
+const fraunces = Fraunces({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "HooHacks 2024",
@@ -28,10 +23,7 @@ export default function RootLayout({
       <head />
       <body
         className={cn(
-          "min-h-screen bg-background antialiased font-satoshi",
-          GeistSans.variable,
-          GeistMono.variable,
-          SatoshiFont.variable
+          `min-h-screen bg-background antialiased ${fraunces.className}`
         )}
       >
         {children}
