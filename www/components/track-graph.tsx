@@ -29,8 +29,12 @@ export default function TrackGraphView({
           />
           {index > 0 && (
             <Xarrow
+              strokeWidth={2}
+              headSize={10}
+              dashness={true}
               end={videoModel.videoLink.slice(-5)}
               start={track[index - 1].videoLink.slice(-5)}
+              color="gray"
             />
           )}
         </GraphLayer>

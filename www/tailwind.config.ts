@@ -20,8 +20,9 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)"],
-        mono: ["var(--font-geist-mono)"],
+        sans: ["var(--font-satoshi)"],
+        mono: ["var(--font-satoshi)"],
+        serif: ["var(--font-satoshi)"],
         satoshi: ["var(--font-satoshi)"],
       },
       colors: {
