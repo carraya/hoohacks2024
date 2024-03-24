@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-from apis.agentapi import assess_knowledge, chart_skill_track, optimize_track_for_user, generate_possible_videos
-from apis.embeddingsapi import generate_playlist
+from agentapi import assess_knowledge, chart_skill_track, optimize_track_for_user, generate_possible_videos
+from embeddingsapi import generate_playlist
 
 app = FastAPI()
 
@@ -21,6 +21,7 @@ class Playlist(BaseModel):
 
 @app.post("/generate_playlist")
 async def generate_playlist_endpoint(input_data: InputData):
+    print("STARTED")
     knowledge_assessment = await assess_knowledge(
         identity_statement=input_data.identity_statement,
         skill_statement=input_data.skill_statement,
@@ -41,6 +42,7 @@ async def generate_playlist_endpoint(input_data: InputData):
     possible_videos = await generate_possible_videos(learning_path)
 
     playlist = await generate_playlist(possible_videos)
+    print(len(playlist))
 
     playlist_parsed = [Video(video_id=video['video_id'], title=video['title'], description=video['description']) for video in playlist]
 

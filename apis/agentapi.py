@@ -189,6 +189,7 @@ async def generate_possible_videos(learning_path):
             q=f"{topic} tutorial|lecture|lesson",  # Adding educational keywords to the query
             type='video',  # Ensuring we only get videos
             videoCategoryId='27',  # Filtering for the 'Education' category
+            videoDuration='medium',
             regionCode='US',  # Optional: if you want to bias results towards a specific region
             relevanceLanguage='en'  # Optional: to bias the search results towards a specific language
         )
