@@ -12,7 +12,7 @@ type TrackData = {
     userObj: string;
 };
 
-const supabase = createClient();
+
 
 export async function createTrack({ title, description, completedNode, totalNodes, userObj }: TrackData) {
     if (
@@ -29,7 +29,7 @@ export async function createTrack({ title, description, completedNode, totalNode
     ) {
         throw new Error("Please fill in all fields");
     }
-
+    const supabase = createClient();
     const { data, error } = await supabase.from("tracks").insert([
         {
             title,
@@ -49,6 +49,7 @@ export async function createTrack({ title, description, completedNode, totalNode
 }
 
 export async function getTracks() {
+    const supabase = createClient();
     const { data, error } = await supabase.from("tracks").select("*");
 
     if (error) {
@@ -59,6 +60,7 @@ export async function getTracks() {
 }
 
 export async function getTrack(id: string) {
+    const supabase = createClient();
     const { data, error } = await supabase.from("tracks").select("*").eq("id", id);
 
     if (error) {
@@ -83,7 +85,7 @@ export async function updateTrack({ id, title, description, completedNode, total
     ) {
         throw new Error("Please fill in all fields");
     }
-
+    const supabase = createClient();
     const { data, error } = await supabase.from("tracks").update({
         title,
         description,
@@ -101,6 +103,7 @@ export async function updateTrack({ id, title, description, completedNode, total
 }
 
 export async function deleteTrack(id: string) {
+    const supabase = createClient();
     const { data, error } = await supabase.from("tracks").delete().eq("id", id);
 
     if (error) {
