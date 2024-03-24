@@ -7,8 +7,8 @@ import internal from "stream";
 type TrackData = {
     title: string;
     description: string;
-    completedNode: int;
-    totalNodes: int;
+    completedNode: number;
+    totalNodes: number;
     userObj: string;
 };
 
