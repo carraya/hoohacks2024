@@ -116,7 +116,7 @@ export function TrackDashboard() {
           value={input2}
           onChange={(e) => setInput2(e.target.value)}
         /><div className="py-1"></div>
-        <Button onClick={handleFormSubmit}><button type="submit">Submit!</button></Button>
+        <Button onClick={handleFormSubmit}>Submit!</Button>
       </form>
               </CardContent>
             </Card>
