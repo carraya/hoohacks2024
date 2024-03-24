@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import React, { useState } from "react"
+import React, { useState, useEffect} from "react"
+import {createClient} from "@/utils/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,20 +20,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import Link from "@/node_modules/next/link"
-
+import Link from "next/link"
 
 
 export function TrackDashboard() {
+    const supabase = createClient();
     const [input1, setInput1] = useState('');
     const [input2, setInput2] = useState('');
 
   const handleFormSubmit = async (event) => {
-    event.preventDefault();
-
-    // Validation Needed Here
-    
+    event.preventDefault(); //validation needed here
     try {
       const response = await fetch('https://dummy.restapiexample.com/api/v1/create', {
         method: 'POST',
@@ -44,12 +41,11 @@ export function TrackDashboard() {
           input2,
         }),
       });
-      
       // Handle response
       if (response.ok) {
         // API call was successful
         console.log('Data submitted successfully!');
-      } else {
+    } else {
         // API call failed
         console.error('Failed to submit data:', response.statusText);
       }
@@ -57,6 +53,23 @@ export function TrackDashboard() {
       console.error('Error submitting data:', error);
     }
   };
+
+  const [tracks, setTracks] = useState([]);
+    async function getTracks() {
+        const res = await supabase.from('tracks').select('*');
+        if (res.error) {
+            throw res.error;
+        }
+        return res.data;
+    }
+
+    useEffect(() => {
+        getTracks().then((data) => {
+            console.log(data);
+            setTracks(data);
+        });
+    }, []);
+  
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -101,20 +114,30 @@ export function TrackDashboard() {
           value={input2}
           onChange={(e) => setInput2(e.target.value)}
         /><div className="py-1"></div>
-        <Button onClick={handleFormSubmit}><button type="submit">Click Here</button></Button>
+        <Button onClick={handleFormSubmit}><button type="submit">Submit</button></Button>
       </form>
               </CardContent>
             </Card>
             
           </div>
         </div>
-        <div className="mx-auto flex justify-center w-full max-w-6xl items-start gap-8 ">
-            <Link href="./trackId"><Button>Path 1</Button></Link>
-            <Link href="./trackId"><Button>Path 2</Button></Link>
-            <Link href="./trackId"><Button>Path 3</Button></Link>
-            
+        <div className="mx-auto flex justify-center w-full max-w-6xl items-start gap-8">
+        {tracks.map((track) => (
+        <Button key={track.id}>
+            <Link href={`/${track.id}`}>
+                Start Learning!
+            </Link>
+        </Button>
+            ))}
         </div>
+
       </main>
     </div>
   )
 }
+
+/*
+
+Returns a key (track) with all videos, use dynamic routing to get the track id and display the videos
+
+*/
