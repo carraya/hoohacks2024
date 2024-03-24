@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-from agentapi import assess_knowledge, chart_skill_track, optimize_track_for_user, generate_possible_videos
-from embeddingsapi import generate_playlist
+from apis.agentapi import assess_knowledge, chart_skill_track, optimize_track_for_user, generate_possible_videos
+from apis.embeddingsapi import generate_playlist
 
 app = FastAPI()
 
