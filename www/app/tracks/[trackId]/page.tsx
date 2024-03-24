@@ -3,13 +3,13 @@
 import TrackGraphView from "@/components/track-graph";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 
 export default function Track({
-  initialTrack = [],
+  trackId
 }: {
-  initialTrack: VideoModel[];
+  trackId: string;
 }) {
   const [track, setTrack] = useState([
     {
@@ -32,6 +32,12 @@ export default function Track({
     },
   ]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  // useEffect(() => {
+  //   // use supabase to select track by id
+  //   const res = await supabase.from("tracks").select("*").eq("id", trackId);
+  //   setTrack(res.data[0].videos)
+  // }, [trackId]);
 
   function addNode(
     link: string,
