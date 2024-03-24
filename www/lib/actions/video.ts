@@ -4,34 +4,25 @@ import { createClient } from "@/utils/supabase/server";
 
 type VideoData = {
     title: string;
-    description: string;
     videoID: string;
-    skills: JSON;
     trackID: number;
     order: number;
-    watched: boolean;
 };
 
 export async function createVideo({
     title,
-    description,
     videoID,
-    skills,
     trackID,
     order,
-    watched,
 }: VideoData) {
     const supabase = createClient();
 
     const { data, error } = await supabase.from("videos").insert([
         {
             title,
-            description,
             videoID,
-            skills,
             trackID,
             order,
-            watched,
         },
     ]);
 

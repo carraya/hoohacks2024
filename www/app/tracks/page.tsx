@@ -35,11 +35,13 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/public/Logo-Color.svg";
 import { Label } from "@/components/ui/label";
+import { getTracks } from "@/lib/actions/track";
 
 export default function TracksDashboard() {
   const supabase = createClient();
-  const [input1, setInput1] = useState("");
-  const [input2, setInput2] = useState("");
+  const [identityStatement, setIdentityStatement] = useState("");
+  const [skillStatement, setSkillStatement] = useState("");
+  const [desiredSkill, setDesiredSkill] = useState("");
 
   const handleFormSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault(); //validation needed here
@@ -71,14 +73,6 @@ export default function TracksDashboard() {
   };
 
   const [tracks, setTracks] = useState([]);
-  async function getTracks() {
-    const res = await supabase.from("tracks").select("*");
-    console.log(res);
-    if (res.error) {
-      throw res.error;
-    }
-    return res.data;
-  }
 
   useEffect(() => {
     getTracks().then((data) => {
@@ -147,8 +141,8 @@ export default function TracksDashboard() {
                 <Input
                   type="text"
                   placeholder="I am a..."
-                  value={input1}
-                  onChange={(e) => setInput1(e.target.value)}
+                  value={identityStatement}
+                  onChange={(e) => setIdentityStatement(e.target.value)}
                   className="py-4"
                 />
                 <div className="py-2"></div>
@@ -156,8 +150,8 @@ export default function TracksDashboard() {
                 <Input
                   type="text"
                   placeholder="I am skilled in..."
-                  value={input1}
-                  onChange={(e) => setInput1(e.target.value)}
+                  value={skillStatement}
+                  onChange={(e) => setSkillStatement(e.target.value)}
                   className="py-4"
                 />
                 <div className="py-2"></div>
@@ -165,8 +159,8 @@ export default function TracksDashboard() {
                 <Input
                   type="text"
                   placeholder="I want to know..."
-                  value={input2}
-                  onChange={(e) => setInput2(e.target.value)}
+                  value={desiredSkill}
+                  onChange={(e) => setDesiredSkill(e.target.value)}
                 />
                 <div className="py-5"></div>
                 <DialogFooter className="sm:justify-start">

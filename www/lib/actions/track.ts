@@ -68,15 +68,16 @@ export async function getTrack(id: string) {
     }
 
     return data;
+    
 }
 
 export async function updateTrack({ id, title, description, completedNode, totalNodes, userObj }: TrackData) {
     if (
         typeof title !== "string" ||
         typeof description !== "string" ||
-        typeof completedNode !== "int" ||
-        typeof totalNodes !== "int" ||
-        typeof userObj !== "string" ||
+        typeof completedNode !== "number" ||
+        typeof totalNodes !== "number" ||
+        typeof userObj !== "number" ||
         !title ||
         !description ||
         !completedNode ||
