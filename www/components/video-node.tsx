@@ -13,15 +13,15 @@ export default function VideoNode({
   wrapperPadding?: number;
   selected?: boolean;
 }) {
-  function getEmbedLinkFromVideoLink(link: string) {
-    let split = link.split("?v=");
-    return `https://www.youtube.com/embed/${split[split.length - 1]}`;
+  function getEmbedLinkFromVideoLink(id: string) {
+    console.log(`https://www.youtube.com/embed/${id}`);
+    return `https://www.youtube.com/embed/${id}`;
   }
 
   return (
     <div style={{ padding: wrapperPadding }}>
       <Card
-        id={videoModel.videoLink.slice(-5)}
+        id={videoModel.videoID}
         className={
           `p-0 text-center flex bg-background justify-center items-center rounded-2xl border-[1px] border-input flex-col ` +
           className +
@@ -29,7 +29,7 @@ export default function VideoNode({
         }
       >
         <Iframe
-          url={getEmbedLinkFromVideoLink(videoModel.videoLink)}
+          url={getEmbedLinkFromVideoLink(videoModel.videoID)}
           width="640px"
           height="320px"
           id=""
@@ -39,16 +39,8 @@ export default function VideoNode({
         />
         <div className="p-[20px]">
           <h1 className="text-2xl font-satoshi mb-1 font-semibold">
-            {videoModel.videoTitle}
+            {videoModel.title}
           </h1>
-          <p className="text-sm font-satoshi">{videoModel.channelName}</p>
-          {/* <div className="h-full flex gap-2">
-            {videoModel.videoTopics.map((topic: string, index: number) => (
-              <Badge key={index} className="rounded-xl" variant={"secondary"}>
-                {topic}
-              </Badge>
-            ))}
-          </div> */}
         </div>
       </Card>
     </div>

@@ -2,13 +2,6 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-type VideoData = {
-    title: string;
-    videoID: string;
-    trackID: number;
-    order: number;
-};
-
 export async function createVideo({
     title,
     videoID,
@@ -31,6 +24,22 @@ export async function createVideo({
     }
 
     console.log(data);
+}
+
+export async function getVideosByTrackId(trackId: string) {
+    console.log("Called getVideosByTrackId")
+    const supabase = createClient();
+
+    console.log("trackId: ", trackId)
+
+    const { data, error } = await supabase.from("videos").select().eq("trackID", trackId);
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+
+    return data;
 }
 
 export async function readVideos() {

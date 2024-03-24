@@ -2,6 +2,7 @@
 import { PlusIcon } from "@radix-ui/react-icons";
 import TrackCard from "@/components/track-card";
 import { Button } from "@/components/ui/button";
+import { LoaderCircle } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -35,7 +36,9 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "@/public/Logo-Color.svg";
 import { Label } from "@/components/ui/label";
-import { getTracks } from "@/lib/actions/track";
+import { getTracks, createTrack } from "@/lib/actions/track";
+import Track from "./[trackId]/page";
+import { useRouter } from "next/navigation";
 
 export default function TracksDashboard() {
   const supabase = createClient();
@@ -46,39 +49,39 @@ export default function TracksDashboard() {
   const handleFormSubmit = async (event: { preventDefault: () => void }) => {
     event.preventDefault(); //validation needed here
     try {
-      const response = await fetch(
-        "https://dummy.restapiexample.com/api/v1/create",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            input1,
-            input2,
-          }),
-        }
-      );
       // Handle response
-      if (response.ok) {
-        // API call was successful
-        console.log("Data submitted successfully!");
-      } else {
-        // API call failed
-        console.error("Failed to submit data:", response.statusText);
-      }
+      setIsLoading(true);
+      const response = await createTrack({
+        title: "New Track",
+        identity_statement: identityStatement,
+        skill_statement: skillStatement,
+        desired_skill: desiredSkill,
+      });
+      setIsLoading(false);
+
+      // if (response.ok) {
+      //   // API call was successful
+      //   console.log("Data submitted successfully!");
+      // } else {
+      //   // API call failed
+      //   console.error("Failed to submit data:", response.statusText);
+      // }
     } catch (error) {
       console.error("Error submitting data:", error);
     }
   };
 
-  const [tracks, setTracks] = useState([]);
+  const [tracks, setTracks] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    getTracks().then((data) => {
-      console.log(data);
-      setTracks(data);
-    });
+    async function fetchData() {
+      const res = await getTracks();
+      console.log(res);
+      setTracks(res);
+    }
+    fetchData();
   }, []);
 
   return (
@@ -119,12 +122,23 @@ export default function TracksDashboard() {
             </div>
             <div className="grid gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3">
               <DialogTrigger>
-                <div className="w-full h-full border-[2px] border-dotted border-gray-300 rounded-2xl flex flex-col gap-2 justify-center items-center">
+                <div className="w-full h-full border-[2px] min-h-[250px] border-dotted border-gray-300 rounded-2xl flex flex-col gap-2 justify-center items-center">
                   <PlusIcon color="gray" className="h-[50px] w-[50px]" />
                   <p className="text-gray-500">Learn Something New</p>
                 </div>
               </DialogTrigger>
-              <TrackCard />
+              {tracks.map((track) => (
+                <div
+                  key={track.id}
+                  onClick={() => router.push(`/tracks/${track.id}`)}
+                >
+                  <TrackCard
+                    title={track.title}
+                    description={track.description}
+                    trackId={track.id}
+                  ></TrackCard>
+                </div>
+              ))}
             </div>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
@@ -164,7 +178,12 @@ export default function TracksDashboard() {
                 />
                 <div className="py-5"></div>
                 <DialogFooter className="sm:justify-start">
-                  <Button onClick={handleFormSubmit}>Start Learning</Button>
+                  <Button onClick={handleFormSubmit} disabled={isLoading}>
+                    {isLoading && (
+                      <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                    Start Learning
+                  </Button>
                   <DialogClose asChild>
                     <Button type="button" variant="secondary">
                       Close
@@ -174,15 +193,6 @@ export default function TracksDashboard() {
               </form>
             </DialogContent>
           </Dialog>
-        </div>
-        <div className="mx-auto flex justify-center w-full max-w-6xl items-start gap-8">
-          {tracks.map((track) => (
-            <Link key={track.id} href={`tracks/${track.id}`}>
-              <Button>
-                <h2>{track.id}</h2>
-              </Button>
-            </Link>
-          ))}
         </div>
       </main>
     </div>
