@@ -126,7 +126,7 @@ export function TrackDashboard() {
         <div className="mx-auto flex justify-center w-full max-w-6xl items-start gap-8">
         
         {tracks.map((track) => (
-    <Link key={track.id} href={`/${track.id}`}>
+    <Link key={track.id} href={`tracks/${track.id}`}>
       <Button>
         <h2>{track.id}</h2>
       </Button>
