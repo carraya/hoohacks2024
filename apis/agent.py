@@ -1,11 +1,9 @@
 from youtube_transcript_api import YouTubeTranscriptApi
-from gpt4all import Embed4All
-from pinecone import Pinecone
 import googleapiclient.discovery
 
 from openai import OpenAI
 from pydantic import BaseModel, Field
-from typing import List, Optional, Union
+from typing import List, Optional
 import instructor
 
 import dotenv
@@ -69,72 +67,47 @@ class ListOfSkills(BaseModel):
 
 
 client = instructor.patch(OpenAI())
-
+youtube = googleapiclient.discovery.build(
+    api_service_name, api_version, developerKey = os.environ.get("YOUTUBE_API_KEY"))
 
 def assess_knowledge(identity_statement: str, skill_statement: str, desired_skill: str):
-    """
-
-    System Rules:
-        - Role: Learning track builder
-        - Must be thorough (zero gaps in knowledge)
-
-    User Parameters:
-        - Skill Statement (what user knows)
-        - Learning Style (theoretical, practical, etc.)
-        - Desired Skill (target skill)
-
-    """
-
     what_user_knows = client.chat.completions.create(
         model="gpt-3.5-turbo",
         max_retries=5,
         messages=[
             {
                 "role": "system",
-                "content": "You are an educational AI agent and your responsibility is to assess a user's current skill level, and determining a list of skills related to their target skill that they more than likely already know.",
+                "content": "You are an educational AI agent tasked with assessing a user's current skill level and determining a list of specific skills related to their target skill that they likely already know.",
             },
             {
                 "role": "user",
-                "content": f"For example, if a user knows how to write Python programming. You'd think about what skills are related to Python programming that the user might already know. In this case, it'd be 'Using a Computer', 'Understanding Python Syntax', 'Using an IDE'.",
+                "content": f"Example: If a user knows Python programming, related skills they might already know include 'Using a Computer', 'Understanding Python Syntax', 'Using an IDE'. Break down these skills into smaller, more specific sub-skills.",
             },
             {
                 "role": "user",
-                "content": f"For example, if a user is 16 years old, then you'd think about what skills a 16 year old might know. In this case, it'd be 'Using a Computer', 'Typing', 'Using the Internet', and 'Solving Algebra'.",
+                "content": f"Example: For a 16-year-old user, assume skills like 'Using a Computer', 'Typing', 'Using the Internet', and 'Solving Algebra'. Break down these skills into smaller, more specific sub-skills.",
             },
             {
                 "role": "user",
-                "content": f"For example, if a user knows nothing about Calculus, but knows a bit about linear algebra, then you'd think about what skills are related to linear algebra that the user might already know. In this case, it'd be 'Solving Algebra', 'Understanding Functions'. You'd assume that the user doesn't know 'Understanding Limits', and 'Understanding Derivatives'.",
+                "content": f"User's identity statement: {identity_statement}",
             },
             {
                 "role": "user",
-                "content": f"For example, if a user knows nothing about biology, but knows a bit about chemistry, then you'd think about what skills are related to chemistry that the user might already know. In this case, it'd be 'Understanding Chemistry', 'Understanding the Scientific Method'. You'd assume that the user doesn't know 'Understanding Biology', 'Understanding Cells'.",
+                "content": f"User's skill statement: {skill_statement}",
             },
             {
                 "role": "user",
-                "content": f"For example, if a user knows nothing about programming, but knows how to use a computer really well, then you'd think about what skills are related to using a computer that the user might already know. In this case, it'd be 'Using a Computer', 'Typing', 'Using the Internet'. You'd assume that the user doesn't know 'Understanding Programming Syntax', 'Understanding Programming Logic'.",
+                "content": f"Desired skill: {desired_skill}",
             },
             {
                 "role": "user",
-                "content": f"For example, if a user knows nothing about programming, but knows how to use a computer really well, then you'd think about what skills are related to using a computer that the user might already know. In this case, it'd be 'Using a Computer', 'Typing', 'Using the Internet'. You'd assume that the user doesn't know 'Understanding Programming Syntax', 'Understanding Programming Logic'.",
-            },
-            {
-                "role": "user",
-                "content": f"This is the user's identity statement: {identity_statement}",
-            },
-            {
-                "role": "user",
-                "content": f"The user's skill statement is: {skill_statement}",
-            },
-            {
-                "role": "user",
-                "content": f"What skills do you assume that the user knows that contribute to achieving: {desired_skill}",
+                "content": f"Based on the user's identity and skill statements, generate a list of specific skills and sub-skills that the user likely already knows, which contribute to achieving the desired skill. Provide the list in a clear, structured format.",
             },
         ],
         response_model=ListOfSkills,
     )
 
     return what_user_knows
-
 
 def chart_skill_track(desired_skill: str):
     skill_track = client.chat.completions.create(
@@ -143,38 +116,29 @@ def chart_skill_track(desired_skill: str):
         messages=[
             {
                 "role": "system",
-                "content": "You are an educational AI agent that is tasked with creating a learning track for a user that is trying to leverage their skills to learn a target skill. Your responsibility is to plot a logical ordered path of skills.",
+                "content": "You are an educational AI agent tasked with creating a comprehensive learning track for a user to reach a target skill, starting from their existing skills.",
             },
             {
                 "role": "user",
-                "content": "If you were asked to create a learning track to learn how to create a Python addition script. You'd think about what skills are needed to create a Python addition script, and that'd be 'Understanding Python Syntax', 'Understanding Python Variables', 'Understanding Python Functions', 'Understanding Python Loops', 'Understanding Python Conditionals', 'Understanding Python Data Types', 'Understanding Python Operators', 'Understanding Python Input/Output'. Now, you'd think about each of these skills, and determine what skills are needed to master them. You'll recursively generate a list of skills that, in a linear combination, are needed to master the target skill.",
+                "content": "Example: To create a Python addition script, the learning track would include skills like 'Understanding Python Syntax', 'Understanding Python Variables', 'Understanding Python Functions', 'Understanding Python Loops', 'Understanding Python Conditionals', 'Understanding Python Data Types', 'Understanding Python Operators', 'Understanding Python Input/Output'. Break down each skill into smaller, more specific sub-skills.",
             },
             {
                 "role": "user",
-                "content": "If you were asked to create a learning track to learn how to derive a function, you'd think about what skills are needed to derive a function, and that'd be 'Understanding Limits', 'Understanding Derivatives', 'Understanding Functions'. Now, you'd think about each of these skills, and determine what skills are needed to master them. You'll recursively generate a list of skills that, in a linear combination, are needed to master the target skill.",
+                "content": "Example: To derive a function, the learning track would include skills like 'Understanding Limits', 'Understanding Derivatives', 'Understanding Functions'. Break down each skill into smaller, more specific sub-skills.",
             },
             {
                 "role": "user",
-                "content": "If you were asked to create a learning track to learn how to create a multi-page Next.js website, you'd think about what skills are needed to create a multi-page Next.js website, and that'd be 'Understanding React', 'Understanding Next.js', 'Understanding CSS', 'Understanding HTML', 'Understanding JavaScript'. Now, you'd think about each of these skills, and determine what skills are needed to master them. You'll recursively generate a list of skills that, in a linear combination, are needed to master the target skill.",
+                "content": f"Target skill: {desired_skill}",
             },
             {
                 "role": "user",
-                "content": "If you were asked to create a learning track to learn how to analyze data using Python, you'd think about what skills are needed to analyze data using Python, and that'd be 'Using Pandas' or 'Using NumPy'. Then you'd think about what skills are needed to use those libraries, so then you'd say that the skills needed for Pandas and Numpy are, 'Understanding Python Syntax', 'Understanding Python Variables', 'Understanding Python Functions', 'Understanding Python Loops', 'Understanding Python Conditionals', 'Understanding Python Data Types', 'Understanding Python Operators', 'Understanding Python Input/Output'. Now, you'd think about each of these skills, and determine what skills are needed to master them. You'll recursively generate a list of skills that, in a linear combination, are needed to master the target skill.",
-            },
-            {
-                "role": "user",
-                "content": f"If you are asked to create a learning track to learn how to analyze data using Python's Pandas library, after you create a thorough list of skills, you'd ensure that the last skill in the list is the user's end goal. In this case, the user's end goal is: {desired_skill}.",
-            },
-            {
-                "role": "user",
-                "content": f"What are the skills needed to master the target skill: {desired_skill}?",
+                "content": f"Generate a comprehensive list of skills and sub-skills needed to master the target skill. Ensure that the list covers all necessary steps and has a high level of granularity. The last skill in the list should be the user's end goal.",
             },
         ],
         response_model=ListOfSkills,
     )
 
     return skill_track
-
 
 def optimize_track_for_user(
     skills_assumed: ListOfSkills, skill_track: ListOfSkills, identity_statement: str
@@ -185,35 +149,31 @@ def optimize_track_for_user(
         messages=[
             {
                 "role": "system",
-                "content": "You are an educational AI agent that is tasked with creating a learning track for a user that is trying to leverage their skills to learn a target skill. Your responsibility is to plot a logical, ordered path of skills given what the user is assumed to know, and what the user should know.",
+                "content": "You are an educational AI agent tasked with optimizing a learning track based on the user's assumed skills and the target skill track.",
             },
             {
                 "role": "user",
-                "content": "If the user knows 'Using a Com  puter', 'Typing', 'Using the Internet', 'Solving Algebra', and the target skill is 'Understanding Python Syntax', then you'd think about what skills are needed to master 'Understanding Python Syntax'. You'd think about what skills are needed to master 'Understanding Python Syntax', and that'd be 'Understanding Python Variables', 'Understanding Python Functions', 'Understanding Python Loops', 'Understanding Python Conditionals', 'Understanding Python Data Types', 'Understanding Python Operators', 'Understanding Python Input/Output'. Now, you'd think about each of these skills, and determine what skills are needed to master them. You'll recursively generate a list of skills that, in a linear combination, are needed to master the target skill.",
+                "content": "Example: If the user already knows 'Using a Computer', optimize the skill track by starting with the next skill after 'Using a Computer'.",
             },
             {
                 "role": "user",
-                "content": f"If you're given a skill track that starts off with knowing how to use a computer, but the user's assumed skills are 'Using a Computer', then you should optimize the skill track by not including 'Using a Computer', but instead starting with the next skill in the track.",
+                "content": "Ensure there are no gaps in the learning track. If the user knows Algebra 1 and the target skill is Calculus, include all necessary skills to bridge the gap.",
             },
             {
                 "role": "user",
-                "content": f"There shouldn't be a gap in the learning track. For example, if the user knows at a maximum Algebra 1, and the target skill is Calculus, then the learning track should include all the skills needed to bridge the gap between Algebra 1 and Calculus.",
+                "content": f"User's assumed skills: {skills_assumed}",
             },
             {
                 "role": "user",
-                "content": f"Here are all the skills that the user is assumed to know: {skills_assumed}",
+                "content": f"User's identity statement: {identity_statement}",
             },
             {
                 "role": "user",
-                "content": f"The user's identity statement is: {identity_statement}",
+                "content": f"Target skill track: {skill_track}",
             },
             {
                 "role": "user",
-                "content": f"The target skill's track is: {skill_track}",
-            },
-            {
-                "role": "user",
-                "content": f"Optimize the skill track for the user.",
+                "content": f"Optimize the skill track for the user, considering their assumed skills and ensuring a smooth progression without gaps. Provide the optimized track in a clear, structured format.",
             },
         ],
         response_model=ListOfSkills,
@@ -221,36 +181,167 @@ def optimize_track_for_user(
 
     return optimized_track
 
-
 def main():
 
-    identity_statement = "I am a 16 year old American 10th grader"
-    skill_statement = "I know everything up through BC Calculus, and I know a bit about linear algebra (just enough to do matrix multiplication) "
-    desired_skill = "I want to learn about the applications of linear algebra in computer science. Specifically, I want to learn about how linear algebra and calculus 3 is used in basic neural networks."
+    # identity_statement = "I am a 16 year old American 10th grader"
+    # skill_statement = "I know everything up through BC Calculus, and I know a bit about linear algebra (just enough to do matrix multiplication) "
+    # desired_skill = "I want to learn about the applications of linear algebra in computer science. Specifically, I want to learn about how linear algebra and calculus 3 is used in basic neural networks."
+    test_inputs = [
+    {
+        "identity_statement": "I am a 35-year-old software engineer with 10 years of experience.",
+        "skill_statement": "I am proficient in Java, Python, and JavaScript. I have experience with web development, databases, and basic machine learning.",
+        "desired_skill": "I want to learn about developing scalable microservices using Kubernetes and Docker."
+    },
+    {
+        "identity_statement": "I am a 22-year-old recent college graduate with a degree in biology.",
+        "skill_statement": "I have a solid understanding of genetics, molecular biology, and basic lab techniques.",
+        "desired_skill": "I want to learn about bioinformatics and how to analyze large genomic datasets using Python."
+    },
+    {
+        "identity_statement": "I am a 40-year-old project manager in the construction industry.",
+        "skill_statement": "I have experience with project planning, budgeting, and team coordination.",
+        "desired_skill": "I want to learn about using data analytics and visualization tools to improve project performance and decision-making."
+    },
+    {
+        "identity_statement": "I am a 28-year-old graphic designer.",
+        "skill_statement": "I am skilled in using Adobe Creative Suite, particularly Photoshop and Illustrator.",
+        "desired_skill": "I want to learn about UI/UX design principles and how to create interactive prototypes using Figma."
+    },
+    {
+        "identity_statement": "I am a 50-year-old executive in the finance industry.",
+        "skill_statement": "I have a deep understanding of financial markets, investment strategies, and risk management.",
+        "desired_skill": "I want to learn about blockchain technology and its potential applications in the financial sector."
+    },
+    {
+        "identity_statement": "I am a 19-year-old college student majoring in computer science.",
+        "skill_statement": "I have completed courses in data structures, algorithms, and object-oriented programming.",
+        "desired_skill": "I want to learn about developing mobile applications using Flutter and Dart."
+    },
+    {
+        "identity_statement": "I am a 45-year-old marketing professional.",
+        "skill_statement": "I have experience in developing and executing marketing campaigns, social media management, and content creation.",
+        "desired_skill": "I want to learn about data-driven marketing strategies and how to use Google Analytics to optimize campaign performance."
+    },
+    {
+        "identity_statement": "I am a 30-year-old mechanical engineer.",
+        "skill_statement": "I have expertise in 3D modeling, finite element analysis, and product design.",
+        "desired_skill": "I want to learn about additive manufacturing techniques and how to design parts for 3D printing."
+    },
+    {
+        "identity_statement": "I am a 55-year-old teacher with a background in English literature.",
+        "skill_statement": "I have extensive knowledge of classic and contemporary literature, as well as experience in teaching writing and critical thinking skills.",
+        "desired_skill": "I want to learn about creating engaging online courses and using learning management systems like Canvas or Moodle."
+    },
+    {
+        "identity_statement": "I am a 25-year-old data analyst.",
+        "skill_statement": "I am proficient in SQL, Excel, and basic statistical analysis.",
+        "desired_skill": "I want to learn about machine learning techniques for predictive modeling and how to implement them using Python libraries like scikit-learn and TensorFlow."
+    }
+]
+    eventually_pickled = dict()
+    # loop through the test inputs
+    
+    for test_input in test_inputs:
+        identity_statement = test_input["identity_statement"]
+        skill_statement = test_input["skill_statement"]
+        desired_skill = test_input["desired_skill"]
 
-    knowledge_assessment = assess_knowledge(
-        identity_statement=identity_statement,
-        skill_statement=skill_statement,
-        desired_skill=desired_skill,
-    )
+        knowledge_assessment = assess_knowledge(
+            identity_statement=identity_statement,
+            skill_statement=skill_statement,
+            desired_skill=desired_skill,
+        )
 
-    print("ASSUMED KNOWLEDGE")
-    for skill in knowledge_assessment.model_dump()["skills"]:
-        print(skill["name"])
+        print("ASSUMED KNOWLEDGE")
+        for skill in knowledge_assessment.model_dump()["skills"]:
+            print(skill["name"])
 
-    skill_track = chart_skill_track(desired_skill=desired_skill)
+        skill_track = chart_skill_track(desired_skill=desired_skill)
 
-    print("SKILL TRACK")
-    for skill in knowledge_assessment.model_dump()["skills"]:
-        print(skill["name"])
+        print("SKILL TRACK")
+        for skill in skill_track.model_dump()["skills"]:
+            print(skill["name"])
 
-    optimized_track = optimize_track_for_user(
-        knowledge_assessment, skill_track, identity_statement
-    )
+        optimized_track = optimize_track_for_user(
+            knowledge_assessment, skill_track, identity_statement
+        )
 
-    print("OPTIMIZED TRACK")
-    for skill in optimized_track.model_dump()["skills"]:
-        print(skill["name"])
+        print("OPTIMIZED TRACK")
+        learning_path = []
+        for skill in optimized_track.model_dump()["skills"]:
+            learning_path.append(skill["name"])
+            print(skill["name"])
+        
+        print("===========")
+        
+        
+        videos = {}
+        for topic in learning_path:
+            request = youtube.search().list(
+                part="snippet",
+                maxResults=5,
+                q=f"{topic} tutorial|lecture|lesson",  # Adding educational keywords to the query
+                type='video',  # Ensuring we only get videos
+                videoCategoryId='27',  # Filtering for the 'Education' category
+                regionCode='US',  # Optional: if you want to bias results towards a specific region
+                relevanceLanguage='en'  # Optional: to bias the search results towards a specific language
+            )
+            response = request.execute()
+            
+            topic_videos = []
+            for item in response['items']:
+                if item['id']['kind'] == 'youtube#video':
+                    topic_videos.append({
+                        'video_id': item['id']['videoId'],
+                        'title': item['snippet']['title'],
+                        'description': item['snippet']['description'],
+                    })
+            videos[topic] = topic_videos
+                    
+        # print(videos)
+        
+        # now go through each topic's list of videos and get the transcript, add it to the video object
+        for topic in videos:
+            for video in videos[topic]:
+                try: 
+                    transcript = YouTubeTranscriptApi.get_transcript(video['video_id'], languages=['en'])
+                    plain_text = ""
+                    for i in transcript:
+                        plain_text += i['text'] + " "
+                    video['transcript'] = plain_text
+                    # print(plain_text)
+                except Exception as e:
+                    # remove video from list if it doesn't have a transcript
+                    video['transcript'] = ""
+                    
+        
+        print("===VIDEOS===")
+        # print out the videos, but only print a preview of the transcript (first 100 characters), also print pretty json
+        for topic in videos:
+            print(f"TOPIC: {topic}")
+            for video in videos[topic]:
+                print(f"VIDEO: {video['title']}")
+                print(f"DESCRIPTION: {video['description']}")
+                print(f"TRANSCRIPT: {video['transcript'][:100]}...")
+                print("")
+                
+
+        # need to put identity_statement, skill_statement, desired_skill, learning_path, and videos into a dictionary
+        eventually_pickled[identity_statement] = {
+            "identity_statement": identity_statement,
+            "skill_statement": skill_statement,
+            "desired_skill": desired_skill,
+            "learning_path": learning_path,
+            "videos": videos
+        }
+        
+
+    # pickle the dictionary
+    import pickle
+    with open('data2.pkl', 'wb') as f:
+        pickle.dump(eventually_pickled, f)
+        
+        
 
 
 if __name__ == "__main__":
