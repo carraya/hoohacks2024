@@ -7,8 +7,8 @@ import internal from "stream";
 type TrackData = {
     title: string;
     description: string;
-    completedNode: int;
-    totalNodes: int;
+    completedNode: number;
+    totalNodes: number;
     userObj: string;
 };
 
@@ -18,8 +18,8 @@ export async function createTrack({ title, description, completedNode, totalNode
     if (
         typeof title !== "string" ||
         typeof description !== "string" ||
-        typeof completedNode !== "int" ||
-        typeof totalNodes !== "int" ||
+        typeof completedNode !== "number" ||
+        typeof totalNodes !== "number" ||
         typeof userObj !== "string" ||
         !title ||
         !description ||

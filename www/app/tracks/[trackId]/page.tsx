@@ -2,15 +2,21 @@
 
 import TrackGraphView from "@/components/track-graph";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import React from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Logo from "@/public/Logo-Color.svg";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
 
-export default function Track({
-  trackId
-}: {
-  trackId: string;
-}) {
+export default function Track({ trackId }: { trackId: string }) {
   const [track, setTrack] = useState([
     {
       videoLink: "https://www.youtube.com/watch?v=PHzOOQfhPFg",
@@ -120,6 +126,32 @@ export default function Track({
 
   return (
     <main className="min-h-screen">
+      <header className="absolute top-0 left-0 w-full flex-col flex bg-white bg-opacity-1 z-10">
+        <div className="flex h-16 relative w-full items-center gap-4 border-b px-8">
+          <div className="flex-1">
+            <Link href="/tracks">
+              <ChevronLeft></ChevronLeft>
+            </Link>
+          </div>
+          <div className="flex-1 justify-center flex">
+            <Image src={Logo} alt="Rabbithole Logo" className="max-w-[50px]" />
+          </div>
+          <div className="relative flex flex-1 justify-end gap-4 md:ml-auto md:gap-2 lg:gap-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="rounded-full bg-gradient-to-tr from-purple-400 to-blue-600 h-[32px] w-[32px]"></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <div className="relative h-[50px] w-full bg-gray-50 border-b flex justify-center items-center">
+          <p className="font-satoshi">Track Title</p>
+        </div>
+      </header>
+
       <TransformWrapper centerOnInit wheel={{ smoothStep: 0.05 }}>
         {({ zoomToElement }) => (
           <React.Fragment>
@@ -132,47 +164,35 @@ export default function Track({
             <div className="absolute bottom-0 left-0 w-full h-[70px] justify-center flex gap-2 items-center">
               <Button
                 disabled={selectedIndex === 0}
+                variant={"secondary"}
                 onClick={() => {
-                  console.log(
-                    "Traversing left, current index: " + selectedIndex
-                  );
                   if (selectedIndex !== 0) {
                     setSelectedIndex(selectedIndex - 1);
                     zoomToElement(getIdFromIndex(selectedIndex - 1), -1);
                   }
-                  console.log("DONE left, current index: " + selectedIndex);
                 }}
               >
-                {"<"}
+                <ChevronLeft></ChevronLeft>
               </Button>
               <Button
-                onClick={() => {
-                  addNode(makeid(5), "title", "channel", ["topic"]);
-                }}
-              >
-                Add to Head
-              </Button>
-              <Button
-                disabled={selectedIndex === track.length - 1}
-                onClick={() => {
-                  console.log(
-                    "Traversing right, current index: " + selectedIndex
-                  );
-                  if (selectedIndex !== track.length - 1) {
-                    setSelectedIndex(selectedIndex + 1);
-                    zoomToElement(getIdFromIndex(selectedIndex + 1), -1);
-                  }
-                  console.log("DONE right, current index: " + selectedIndex);
-                }}
-              >
-                {">"}
-              </Button>
-              <Button
+                variant={"secondary"}
                 onClick={() => {
                   zoomToElement(getIdFromIndex(selectedIndex), -1);
                 }}
               >
-                Return Back to Element
+                Return to Current Video
+              </Button>
+              <Button
+                disabled={selectedIndex === track.length - 1}
+                variant={"secondary"}
+                onClick={() => {
+                  if (selectedIndex !== track.length - 1) {
+                    setSelectedIndex(selectedIndex + 1);
+                    zoomToElement(getIdFromIndex(selectedIndex + 1), -1);
+                  }
+                }}
+              >
+                <ChevronRight></ChevronRight>
               </Button>
             </div>
           </React.Fragment>

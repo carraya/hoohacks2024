@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import Iframe from "react-iframe";
+import { Card } from "./ui/card";
 
 export default function VideoNode({
   videoModel,
@@ -19,12 +20,12 @@ export default function VideoNode({
 
   return (
     <div style={{ padding: wrapperPadding }}>
-      <div
+      <Card
         id={videoModel.videoLink.slice(-5)}
         className={
-          `text-center flex bg-secondary justify-center items-center rounded-2xl border-[1px] border-input flex-col ` +
+          `p-0 text-center flex bg-background justify-center items-center rounded-2xl border-[1px] border-input flex-col ` +
           className +
-          (selected ? " border-[3px] border-primary" : "")
+          (selected ? " ring-purple-400 ring-[5px] ring-offset-2" : "")
         }
       >
         <Iframe
@@ -37,15 +38,19 @@ export default function VideoNode({
           position="relative"
         />
         <div className="p-[20px]">
-          <h1 className="text-lg font-semibold">{videoModel.videoTitle}</h1>
-          <p className="text-sm">{videoModel.channelName}</p>
-          <div className="h-full">
+          <h1 className="text-2xl font-satoshi mb-1 font-semibold">
+            {videoModel.videoTitle}
+          </h1>
+          <p className="text-sm font-satoshi">{videoModel.channelName}</p>
+          {/* <div className="h-full flex gap-2">
             {videoModel.videoTopics.map((topic: string, index: number) => (
-              <Badge key={index}>{topic}</Badge>
+              <Badge key={index} className="rounded-xl" variant={"secondary"}>
+                {topic}
+              </Badge>
             ))}
-          </div>
+          </div> */}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }
